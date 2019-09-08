@@ -1,0 +1,401 @@
+<script src="http://www.google.com/jsapi" type="text/javascript"></script> 
+<script type="text/javascript">google.load("jquery", "1.3.2");</script>
+
+<style type="text/css">
+	body {
+		font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+		font-weight:300;
+		font-size:18px;
+		margin-left: auto;
+		margin-right: auto;
+		width: 1100px;
+	}
+	
+	h1 {
+		font-size:32px;
+		font-weight:300;
+	}
+	
+	.disclaimerbox {
+		background-color: #eee;		
+		border: 1px solid #eeeeee;
+		border-radius: 10px ;
+		-moz-border-radius: 10px ;
+		-webkit-border-radius: 10px ;
+		padding: 20px;
+	}
+
+	video.header-vid {
+		height: 140px;
+		border: 1px solid black;
+		border-radius: 10px ;
+		-moz-border-radius: 10px ;
+		-webkit-border-radius: 10px ;
+	}
+	
+	img.header-img {
+		height: 140px;
+		border: 1px solid black;
+		border-radius: 10px ;
+		-moz-border-radius: 10px ;
+		-webkit-border-radius: 10px ;
+	}
+	
+	img.rounded {
+		border: 1px solid #eeeeee;
+		border-radius: 10px ;
+		-moz-border-radius: 10px ;
+		-webkit-border-radius: 10px ;
+	}
+	
+	a:link,a:visited
+	{
+		color: #1367a7;
+		text-decoration: none;
+	}
+	a:hover {
+		color: #208799;
+	}
+	
+	td.dl-link {
+		height: 160px;
+		text-align: center;
+		font-size: 22px;
+	}
+	
+	.layered-paper-big { /* modified from: http://css-tricks.com/snippets/css/layered-paper/ */
+		box-shadow:
+		        0px 0px 1px 1px rgba(0,0,0,0.35), /* The top layer shadow */
+		        5px 5px 0 0px #fff, /* The second layer */
+		        5px 5px 1px 1px rgba(0,0,0,0.35), /* The second layer shadow */
+		        10px 10px 0 0px #fff, /* The third layer */
+		        10px 10px 1px 1px rgba(0,0,0,0.35), /* The third layer shadow */
+		        15px 15px 0 0px #fff, /* The fourth layer */
+		        15px 15px 1px 1px rgba(0,0,0,0.35), /* The fourth layer shadow */
+		        20px 20px 0 0px #fff, /* The fifth layer */
+		        20px 20px 1px 1px rgba(0,0,0,0.35), /* The fifth layer shadow */
+		        25px 25px 0 0px #fff, /* The fifth layer */
+		        25px 25px 1px 1px rgba(0,0,0,0.35); /* The fifth layer shadow */
+		margin-left: 10px;
+		margin-right: 45px;
+	}
+
+	.paper-big { /* modified from: http://css-tricks.com/snippets/css/layered-paper/ */
+		box-shadow:
+		        0px 0px 1px 1px rgba(0,0,0,0.35); /* The top layer shadow */
+
+		margin-left: 10px;
+		margin-right: 45px;
+	}
+
+
+	.layered-paper { /* modified from: http://css-tricks.com/snippets/css/layered-paper/ */
+		box-shadow:
+		        0px 0px 1px 1px rgba(0,0,0,0.35), /* The top layer shadow */
+		        5px 5px 0 0px #fff, /* The second layer */
+		        5px 5px 1px 1px rgba(0,0,0,0.35), /* The second layer shadow */
+		        10px 10px 0 0px #fff, /* The third layer */
+		        10px 10px 1px 1px rgba(0,0,0,0.35); /* The third layer shadow */
+		margin-top: 5px;
+		margin-left: 10px;
+		margin-right: 30px;
+		margin-bottom: 5px;
+	}
+	
+	.vert-cent {
+		position: relative;
+	    top: 50%;
+	    transform: translateY(-50%);
+	}
+	
+	hr
+	{
+		border: 0;
+		height: 1px;
+		background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+	}
+</style>
+
+<html>
+  <head>
+		<title> Interactive Sketch & Fill: Multiclass Sketch-to-Image Translation  </title>
+		<meta property="og:image" content="https://richzhang.github.io/antialiased-cnns/resources/teaser_fb12.png"/>
+		<meta property="og:title" content="Making Convolutional Networks Shift-Invariant Again." />
+		<meta property="og:description" content="R. Zhang. To appear in ICML 2019." />
+
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-75863369-6"></script>
+		<script>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+
+		  gtag('config', 'UA-75863369-6');
+		</script>
+  </head>
+
+  <body>
+    <br>
+          <center>
+          	<span style="font-size:36px"> Interactive Sketch & Fill: Multiclass Sketch-to-Image Translation </span>
+	  		  <table align=center width=600px>
+	  			  <tr>
+	  	              <td align=center width=100px>
+	  					<center>
+                            <span style="font-size:22px"><a href="https://arnabgho.github.io/">Arnab Ghosh</a>  <a href="https://richzhang.github.io/">Richard Zhang</a>  <a href="https://puneetkdokania.github.io/">Puneet Dokania </a>   </span><br>	
+                            <span style="font-size:22px"><a href="https://www.oliverwang.info">Oliver Wang</a>  <a href="https://people.eecs.berkeley.edu/~efros/">Alexei A. Efros</a>  <a href="http://www.robots.ox.ac.uk/~phst/">Philip H.S. Torr</a>   <a href="https://research.adobe.com/person/eli-shechtman/">Eli Shechtman</a>  </span><br>
+                            <!--<span style="font-size:14px">Adobe Research</span><br> -->
+	  						<!-- <span style="font-size:22px">To appear in ICML, 2019.</span><br> -->
+		  		  		</center>
+		  		  	  </td>
+		  		  </tr>
+	  			  <tr>
+		  		  </tr>
+			  </table>
+	  		  <table align=center width=600px>
+	  			  <tr>
+	  	              <td align=center width=120px>
+	  					<center>
+	  						<!-- <span style="font-size:24px"><a href='./resources/camera-ready.pdf'>[Paper]</a></span><br> -->
+	  						<span style="font-size:24px"><a href='http://www.robots.ox.ac.uk/~tvg/publications/2019/ICCV_ISF_camera_ready.pdf'>[Paper]</a></span>
+	  						<!-- <span style="font-size:18px">In ICML, 2019</span> -->
+		  		  		</center>
+		  		  	  </td>
+	  	              <td align=center width=120px>
+	  					<center>
+	  						<span style="font-size:24px"><a href='https://github.com/arnabgho/iSketchNFill'>[GitHub]</a></span><br>
+		  		  		</center>
+		  		  	  </td>
+		  		  	 </tr>
+	  			  <tr>
+			  </table>
+          </center>
+
+          <center>
+  		  <table align=center width=850px>
+               <tr>
+  	              <td width=820px>
+  					<center>
+  	                	<img class="round" style="width:820px" src="./resources/imgs/teaser.png"/>
+	  				</center>
+  	              </td>
+              </tr>           
+          </table>
+
+          <table align=center width=820px>
+              <tr>
+                  <td width=185px>
+  					<center>
+  	                	<img class="round" style="width:185px" src="./resources/gifs/pineapple.gif"/>
+	  				</center>
+  	              </td>
+                  <td width=185px>
+  					<center>
+  	                	<img class="round" style="width:185px" src="./resources/gifs/strawberry.gif"/>
+	  				</center>
+                  </td> 
+                  <td width=185px>
+  					<center>
+  	                	<img class="round" style="width:185px" src="./resources/gifs/cupcake.gif"/>
+	  				</center>
+  	              </td>
+                  <td width=185px>
+  					<center>
+  	                	<img class="round" style="width:185px" src="./resources/gifs/orange.gif"/>
+	  				</center>
+  	              </td>
+              </tr>
+                
+              <!--<tr>
+  	              <td width=800px>
+  					<center>
+  	                	<img class="round" style="width:800px" src="./resources/imgs/teaser.png"/>
+	  				</center>
+  	              </td>
+              </tr> -->
+<!--   			  <tr>
+  	              <td width=300px>
+  					<center>
+  	                	<a href='./resources/gifs/28476.gif'><img class="round" style="width:300px" src="./resources/gifs/28476.gif"/></a>
+	  				</center>
+  	              </td>
+    	          <td width=300px>
+  					<center>
+  	                	<a href='./resources/gifs/28347.gif'><img class="round" style="width:300px" src="./resources/gifs/28347.gif"/></a>
+	  				</center>
+  	              </td>
+                  <td width=300px>
+  					<center>
+  	                	<a href='./resources/gifs/35969.gif'><img class="round" style="width:300px" src="./resources/gifs/35969.gif"/></a>
+	  				</center>
+  	              </td>
+                </tr> -->
+  		  </table>
+
+  		  <table align=center width=850px>
+	  		  <tr>
+	  		  	<td>
+	  		  		<!-- <center> -->
+                    Pix2pix produced impressive photorealistic images but it needed the full edge-map as input which is hard for untrained humans to draw accurately. We provide a sketch recommendation system which helps the user to draw and interactively generate realistic images. 
+					<!-- </center> -->
+	  		    </td>
+	  		  </tr>
+	  		</table>
+  		</center>
+
+          <hr>
+
+<!--   		  <br>
+  		  <table align=center width=800px>
+  			  <tr>
+  	              <td width=400px>
+  					<center>
+  	                	<a href="./resources/fig1d.jpeg"><img class="" src = "./resources/fig1d.jpeg" height="400px"></img></href></a><br>
+					</center>
+  	              </td>
+                </tr>
+  		  </table>
+		  <hr> -->
+
+  		  <table align=center width=850px>
+	  		  <center><h1>Abstract</h1></center>
+	  		  <tr>
+	  		  	<td>
+					We propose an interactive GAN-based sketch-to-image translation method that helps novice users easily create images of simple objects. The user starts with a sparse sketch and a desired object category, and the network then recommends its plausible completion(s) and shows a corresponding synthesized image. This enables a feedback loop, where the user can edit the sketch based on the network's recommendations, while the network is able to better synthesize the image that the user might have in mind. In order to use a single model for a wide array of object classes, we introduce a gating-based approach for class conditioning, which allows us to generate distinct classes without feature mixing, from a single generator network.
+	  		    </td>
+	  		  </tr>
+			</table>
+  		  <br>
+		  <hr>
+
+  		  <table align=center width=700px>
+	  		  <center><h1>Method overview</h1></center>
+  			  <tr>
+  	              <td align=center width=700px>
+  					<center>
+						  <td><img class="round" style="width:800px" src="./resources/imgs/method.png"/></td>
+	  		  		</center>
+			  </tr>
+		  </center>
+		  </table>
+  		  <table align=center width=850px>
+		  	<center>
+		  		<tr>
+		  			<td>
+                        The user makes an input stroke, the shape generator network gives multiple shape completions based on the selected class. The appearance generator takes one of the shape completions and generates a realistic image from it.
+		  			</td>
+		  		</tr>
+		  </center>
+		  </table>
+		  <br>
+<!--   		  <table align=center width=700px>
+  			  <tr>
+  	              <td align=center width=700px>
+  					<center>
+						  <td><img class="round" style="width:800px" src="./resources/fig1e.jpg"/></td>
+	  		  		</center>
+			  </tr>
+		  </table>
+		  <br> -->
+		  <hr>
+<!--        <center><h1>Talk</h1></center>
+        <p align="center">
+<iframe width="660" height="395" src="https://www.youtube.com/embed/HjewNBZz00w" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen align="center"></iframe></p>
+
+        <br>
+        <hr>
+        -->
+	  <!-- NETWORK ARCHITECTURE, TRY THE MODEL -->
+ 	<!--	<center><h1>Code and Antialiased Models</h1></center>
+
+  		  <table align=center width=420px>
+		  	<center>
+		  		<tr>
+		  			<td>
+		  				<b>ImageNet Classification (shift-invariance vs accuracy)</b>
+		  			</td>
+		  		</tr>
+		  </center>
+		  </table>
+  		  <table align=center width=400px>
+  			  <tr>
+  	              <td align=center width=400px>
+  					<center>
+						  <td><img class="round" style="width:450px" src="./resources/imagenet_ind2_noalex.jpg"/></td>
+	  		  		</center>
+			  </tr>
+		  </table>
+  		  <table align=center width=850px>
+		  	<center>
+		  		<tr>
+		  			<td>
+		  	As designed, adding low-pass filtering increases <b>shift-invariance (y-axis)</b>. Surprisingly, we also observe increases in <b>accuracy (x-axis)</b>, across architectures, as well as increased robustness. We have pretrained anti-aliased models, along with instructions for making your favorite architecture more shift-invariant.
+		  			</td>
+		  		</tr>
+		  </center>
+		  </table>
+  		  <table align=center width=800px>
+			  <br>
+			  <tr><center>
+				<span style="font-size:28px">&nbsp;<a href='https://github.com/adobe/antialiased-cnns'>[GitHub]</a>
+		  </table>
+		-->
+
+<!-- <a href="http://www.eecs.berkeley.edu/~rich.zhang/projects/2016_colorization/files/demo_v0/colorization_release_v0.caffemodel">[Model 129MB]</span> -->
+
+
+  		  <!-- <table align=center width=550px> -->
+  		  <table align=center width=490px>
+	 		<center><h1>Paper and Supplementary Material</h1></center>
+  			  <tr>
+				  <!-- <td><a href="./resources/camera-ready.pdf"><img class="layered-paper-big" style="height:175px" src="./resources/paper.png"/></a></td> -->
+				  <td><a href="https://arxiv.org/abs/1904.11486"><img class="layered-paper-big" style="height:175px" src="./resources/imgs/paper.png"/></a></td>
+				  <td><span style="font-size:14pt"> A.Ghosh, R. Zhang, P. Dokania, O. Wang, A. Efros, P. Torr, E. Shechtman<br>
+				  <b> Interactive Sketch & Fill: Multiclass Sketch-to-Image Translation </b><br>
+				  In ICCV, 2019.<br>
+				  (hosted on <a href="http://www.robots.ox.ac.uk/~tvg/publications/2019/ICCV_ISF_camera_ready.pdf">ArXiv</a>)<br>
+				  <!-- (<a href="./resources/camera-ready.pdf">camera ready</a>)<br> -->
+				  <span style="font-size:4pt"><a href=""><br></a>
+				  </span>
+				  </td>
+  	              </td>
+              </tr>
+  		  </table>
+		  <br>
+
+		  <table align=center width=600px>
+			  <tr>
+				  <td><span style="font-size:14pt"><center>
+				  	<a href="./resources/bibtex_icml19.txt">[Bibtex]</a>
+  	              </center></td>
+              </tr>
+  		  </table>
+
+		  <hr>
+		  <br>
+		  	
+  		  <table align=center width=900px>
+  			  <tr>
+  	              <td width=400px>
+  					<left>
+	  		  <center><h1>Acknowledgements</h1></center>
+<!-- 	  		  I thank <a href="https://research.adobe.com/person/eli-shechtman/">Eli Shechtman</a>, 
+	  		  <a href="http://www.mgharbi.com/">Michaël Gharbi</a>,
+	  		  <a href="http://www.oliverwang.info/">Oliver Wang</a>,
+	  		  <a href="http://andrewowens.com/">Andrew Owens</a>, 
+	  		  <a href="https://people.eecs.berkeley.edu/~efros/">Alexei A. Efros<a>,
+	  		  <a href="https://people.eecs.berkeley.edu/~kanazawa/">Angjoo Kanazawa</a>, and
+	  		  <a href="http://web.mit.edu/phillipi/">Phillip Isola<a> for their helpful discussion, comments, and encouragement.
+ -->
+            We thank Harkirat Singh Behl, Noa Fish, Taesung Park, Rahul Arora for their helpful comments and feedback on the paper. AG, PKD, and PHST are supported by the ERC grant ERC-2012-AdG, EPSRC grant Seebibyte EP/M013774/1, EPSRC/MURI grant EP/N019474/1 and would also like to acknowledge the Royal Academy of Engineering and FiveAI. Part of the work was done while AG was an intern at Adobe. 
+			</left>
+		</td>
+			 </tr>
+		</table>
+
+		<br>
+
+              
+</body>
+</html>
+ 
