@@ -398,9 +398,9 @@ class LabelChannelGatedResnetConvResnetG(nn.Module):
 
 
     def forward(self, input,labels,noise=None):
-        batch_size = input.size(0)
+        batchSize = input.size(0)
         input_gate = self.label_embedding(labels)
-        input_gate = input_gate.resize(batch_size,self.opt.nsalient)
+        input_gate = input_gate.resize(batchSize,self.opt.nsalient)
         if self.opt.nz>0:
             input_gate=self.label_noise(torch.cat((input_gate,noise),1))
         output_gate = self.gate(input_gate)
@@ -410,32 +410,13 @@ class LabelChannelGatedResnetConvResnetG(nn.Module):
         output = self.main_initial(input)
         for i in range(self.opt.ngres):
             alpha = output_gate_mult[:,i*self.opt.ngf:(i+1)*self.opt.ngf]
-            alpha = alpha.resize(self.opt.batchSize,self.opt.ngf,1,1)
+            alpha = alpha.resize(batchSize,self.opt.ngf,1,1)
             if self.opt.gate_affine:
                 beta=output_gate_add[:,i*self.opt.ngf:(i+1)*self.opt.ngf]
-                beta=beta.resize(self.opt.batchSize,self.opt.ngf,1,1)
+                beta=beta.resize(batchSize,self.opt.ngf,1,1)
                 output=self.main[i](output,alpha,beta)
             else:
                 output=self.main[i](output,alpha)
-
-        output=self.main[self.opt.ngres](output)
-        output=self.main[self.opt.ngres+1](output)
-        return output
-
-    def forward_gate(self,labels,noise=None):
-        input_gate = self.label_embedding(labels)
-        if self.opt.nz>0:
-            input_gate=self.label_noise(torch.cat((input_gate,noise),1))
-        output_gate = self.gate(input_gate)
-        output_gate_mult = self.gate_mult(output_gate)
-        return output_gate_mult
-
-    def forward_main(self,input, output_gate_mult):
-        output = self.main_initial(input)
-        for i in range(self.opt.ngres):
-            alpha = output_gate_mult[:,i*self.opt.ngf:(i+1)*self.opt.ngf]
-            alpha = alpha.resize(self.opt.batchSize,self.opt.ngf,1,1)
-            output=self.main[i](output,alpha)
 
         output=self.main[self.opt.ngres](output)
         output=self.main[self.opt.ngres+1](output)
@@ -544,6 +525,7 @@ class LabelChannelGatedResnetConvResnetD(nn.Module):
             self.gate_add=nn.Sequential(*gate_block_add)
 
     def forward(self, img, labels):
+        batchSize=labels.size(0)
         input_gate = self.label_embedding(labels)
         input_main = img
 
@@ -554,22 +536,15 @@ class LabelChannelGatedResnetConvResnetD(nn.Module):
             output_gate_add = self.gate_add(output_gate)
         for i in xrange(1,1+self.opt.ndres):
             alpha = output_gate_mult[:,(i-1)*self.opt.ndf:i*self.opt.ndf]
-            alpha = alpha.resize(self.opt.batchSize,self.opt.ndf,1,1)
+            alpha = alpha.resize(batchSize,self.opt.ndf,1,1)
             if self.opt.gate_affine:
                 beta=output_gate_add[:,(i-1)*self.opt.ndf:i*self.opt.ndf]
-                beta=beta.resize(self.opt.batchSize,self.opt.ndf,1,1)
+                beta=beta.resize(batchSize,self.opt.ndf,1,1)
                 output=self.main[i](output,alpha,beta)
             else:
                 output=self.main[i](output,alpha)
 
         output = self.main_latter(output)
         return output
-
-    def forward_gate(self,labels):
-        labels=labels.long()
-        input_gate = self.label_embedding(labels)
-        output_gate = self.gate(input_gate)
-        output_gate_mult = self.gate_mult(output_gate)
-        return output_gate_mult
 
 
