@@ -119,33 +119,37 @@
 <html>
   <head>
 		<title> Interactive Sketch & Fill: Multiclass Sketch-to-Image Translation  </title>
-		<meta property="og:image" content="https://richzhang.github.io/antialiased-cnns/resources/teaser_fb12.png"/>
-		<meta property="og:title" content="Making Convolutional Networks Shift-Invariant Again." />
-		<meta property="og:description" content="R. Zhang. To appear in ICML 2019." />
+		<meta property="og:image" content="https://arnabgho.github.io/iSketchNFill/resources/teaser.png"/>
+		<meta property="og:title" content="Interactive Sketch & Fill: Multiclass Sketch-to-Image Translation" />
+		<meta property="og:description" content="To appear in ICCV 2019." />
+
+
 
 		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-75863369-6"></script>
-		<script>
-		  window.dataLayer = window.dataLayer || [];
-		  function gtag(){dataLayer.push(arguments);}
-		  gtag('js', new Date());
-
-		  gtag('config', 'UA-75863369-6');
-		</script>
+		
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-71335999-5"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+        
+          gtag('config', 'UA-71335999-5');
+        </script>
   </head>
 
   <body>
     <br>
           <center>
-          	<span style="font-size:36px"> Interactive Sketch & Fill: Multiclass Sketch-to-Image Translation </span>
-	  		  <table align=center width=600px>
+          	<span style="font-size:32px"> Interactive Sketch & Fill: Multiclass Sketch-to-Image Translation </span>
+	  		  <table align=center width=760px>
 	  			  <tr>
-	  	              <td align=center width=100px>
+	  	              <td align=center width=120px>
 	  					<center>
-                            <span style="font-size:22px"><a href="https://arnabgho.github.io/">Arnab Ghosh</a>  <a href="https://richzhang.github.io/">Richard Zhang</a>  <a href="https://puneetkdokania.github.io/">Puneet Dokania </a>   </span><br>	
-                            <span style="font-size:22px"><a href="https://www.oliverwang.info">Oliver Wang</a>  <a href="https://people.eecs.berkeley.edu/~efros/">Alexei A. Efros</a>  <a href="http://www.robots.ox.ac.uk/~phst/">Philip H.S. Torr</a>   <a href="https://research.adobe.com/person/eli-shechtman/">Eli Shechtman</a>  </span><br>
-                            <!--<span style="font-size:14px">Adobe Research</span><br> -->
-	  						<!-- <span style="font-size:22px">To appear in ICML, 2019.</span><br> -->
+                            <span style="font-size:20px"><a href="https://arnabgho.github.io/">Arnab Ghosh<sup>1</sup> </a> &nbsp;&nbsp;&nbsp;&nbsp; <a href="https://richzhang.github.io/">Richard Zhang<sup>2</sup></a> &nbsp;&nbsp;&nbsp;&nbsp;  <a href="https://puneetkdokania.github.io/">Puneet K. Dokania<sup>1</sup></a>   </span><br>	
+                            <span style="font-size:20px"><a href="https://www.oliverwang.info">Oliver Wang<sup>2</sup></a>  &nbsp;&nbsp;&nbsp; <a href="https://people.eecs.berkeley.edu/~efros/">Alexei A. Efros<sup>2,3</sup></a>  &nbsp;&nbsp;&nbsp;  <a href="http://www.robots.ox.ac.uk/~phst/">Philip H.S. Torr<sup>1</sup> </a>  &nbsp;&nbsp;&nbsp; <a href="https://research.adobe.com/person/eli-shechtman/">Eli Shechtman<sup>2</sup></a>  </span><br>
+                            <br><span style="font-size:20px"><sup>1</sup> University of Oxford &nbsp;&nbsp;&nbsp;&nbsp;  <sup>2</sup> Adobe Research &nbsp;&nbsp;&nbsp;&nbsp; <sup>3</sup> UC Berkeley</span><br> 
+                            <br><span style="font-size:22px">In ICCV 2019</span><br>
 		  		  		</center>
 		  		  	  </td>
 		  		  </tr>
@@ -171,19 +175,38 @@
 			  </table>
           </center>
 
+          <!--
           <center>
   		  <table align=center width=850px>
                <tr>
   	              <td width=820px>
   					<center>
-                        <!--	<img class="round" style="width:820px" src="./resources/imgs/teaser.png"/> -->
-                        <img class="round" style="width:820px" src="resources/imgs/teaser.png"/> 
+                        <img class="round" style="width:820px" src="resources/imgs/teaser.png"/>
 
 	  				</center>
   	              </td>
               </tr>           
           </table>
-
+          -->
+          <br>
+          <center>
+  		  <table align=center width=840px>
+               <tr>
+  	              <td width=410px>
+  					<center>
+                        <img class="round" style="width:410px" src="resources/gifs/cupcake.gif"/>
+	  				</center>
+  	              <td width=410px>
+  					<center>
+                        <img class="round" style="width:410px" src="resources/gifs/pineapple.gif"/>
+	  				</center>
+  	              </td>
+ 
+  	              </td>
+              </tr>           
+          </table>
+          <br>
+          <!--
           <table align=center width=820px>
               <tr>
                   <td width=185px>
@@ -207,44 +230,19 @@
 	  				</center>
   	              </td>
               </tr>
-                
-              <!--<tr>
-  	              <td width=800px>
-  					<center>
-  	                	<img class="round" style="width:800px" src="./resources/imgs/teaser.png"/>
-	  				</center>
-  	              </td>
-              </tr> -->
-<!--   			  <tr>
-  	              <td width=300px>
-  					<center>
-  	                	<a href='./resources/gifs/28476.gif'><img class="round" style="width:300px" src="./resources/gifs/28476.gif"/></a>
-	  				</center>
-  	              </td>
-    	          <td width=300px>
-  					<center>
-  	                	<a href='./resources/gifs/28347.gif'><img class="round" style="width:300px" src="./resources/gifs/28347.gif"/></a>
-	  				</center>
-  	              </td>
-                  <td width=300px>
-  					<center>
-  	                	<a href='./resources/gifs/35969.gif'><img class="round" style="width:300px" src="./resources/gifs/35969.gif"/></a>
-	  				</center>
-  	              </td>
-                </tr> -->
   		  </table>
-
+          -->  
   		  <table align=center width=850px>
 	  		  <tr>
 	  		  	<td>
 	  		  		<!-- <center> -->
-                    Pix2pix produced impressive photorealistic images but it needed the full edge-map as input which is hard for untrained humans to draw accurately. We provide a sketch recommendation system which helps the user to draw and interactively generate realistic images. 
+                    We provide a sketch recommendation system which helps the user to draw and interactively generate realistic images. 
 					<!-- </center> -->
 	  		    </td>
 	  		  </tr>
 	  		</table>
   		</center>
-
+        <br>
           <hr>
 
 <!--   		  <br>
@@ -284,7 +282,7 @@
 		  	<center>
 		  		<tr>
 		  			<td>
-                        The user makes an input stroke, the shape generator network gives multiple shape completions based on the selected class. The appearance generator takes one of the shape completions and generates a realistic image from it.
+                        The user makes an input stroke, and the shape generator network gives multiple shape completions based on the selected class. The appearance generator takes one of the shape completions and generates a realistic image from it.
 		  			</td>
 		  		</tr>
 		  </center>
@@ -365,18 +363,18 @@
   		  </table>
 		  <br>
 
-          <!--
+          
 		  <table align=center width=600px>
 			  <tr>
 				  <td><span style="font-size:14pt"><center>
-				  	<a href="resources/bibtex_icml19.txt">[Bibtex]</a>
+				  	<a href="resources/bibtex_iccv19.txt">[Bibtex]</a>
   	              </center></td>
               </tr>
   		  </table>
-
+          
+          <br>
 		  <hr>
 		  <br>
-		  -->
   		  <table align=center width=900px>
   			  <tr>
   	              <td width=400px>
