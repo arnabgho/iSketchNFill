@@ -13,10 +13,10 @@ def create_model(opt):
         model = SparseWGANGPPix2PixModel()
 
 
-    elif opt.model == 'label_channel_gated_pix2pix':
+    elif opt.model == 'stochastic_label_channel_gated_pix2pix':
         assert(opt.dataset_mode == 'labeled')
-        from .label_channel_gated_pix2pix_model import LabelChannelGatedPix2PixModel
-        model = LabelChannelGatedPix2PixModel()
+        from .stochastic_label_channel_gated_pix2pix_model import StochasticLabelChannelGatedPix2PixModel
+        model = StochasticLabelChannelGatedPix2PixModel()
 
 
     elif opt.model == 'test':

@@ -1,6 +1,6 @@
 @inproceedings{ghosh2019isketchnfill,
   title= {Interactive Sketch & Fill: Multiclass Sketch-to-Image Translation},
-  author={Ghosh, Arnab and Zhang, Richard and Dokania, Puneet K and Wang, Oliver and Efros, Alexei A and Torr, Philip H S and Shechtman, Eli},
+  author={Ghosh, Arnab and Zhang, Richard and Dokania, Puneet K. and Wang, Oliver and Efros, Alexei A. and Torr, Philip H. S. and Shechtman, Eli},
   booktitle={Proceedings of the IEEE international conference on computer vision},
   year={2019}
 }

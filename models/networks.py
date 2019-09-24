@@ -200,8 +200,8 @@ def define_G(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropo
 
     if use_gpu:
         assert(torch.cuda.is_available())
-    if which_model_netG == 'LabelChannelGatedResnetConvResnetG':
-        netG = LabelChannelGatedResnetConvResnetG(opt)
+    if which_model_netG == 'StochasticLabelBetaChannelGatedResnetConvResnetG' :
+        netG = StochasticLabelBetaChannelGatedResnetConvResnetG(opt)
     else:
         raise NotImplementedError('Generator model name [%s] is not recognized' % which_model_netG)
     if len(gpu_ids) > 0:
@@ -323,35 +323,36 @@ class WGANLoss(nn.Module):
 ###### Channel-Wise Gating techniques (Multiplicative and Affine)
 ###################################################################
 
-class LabelChannelGatedResnetConvResnetG(nn.Module):
+
+
+class StochasticLabelBetaChannelGatedResnetConvResnetG(nn.Module):
     def __init__(self,opt):
-        super(LabelChannelGatedResnetConvResnetG, self).__init__()
+        super(StochasticLabelBetaChannelGatedResnetConvResnetG, self).__init__()
         self.opt=opt
         opt.nsalient = max(10,opt.n_classes)
         self.label_embedding = nn.Embedding(opt.n_classes, opt.nsalient)
-        self.main_initial = nn.Sequential( nn.Conv2d(opt.input_nc,opt.ngf,kernel_size=3,stride=1,padding=1) ,
-                            get_norm(opt.ngf,opt.norm_G,opt.num_groups),  #nn.BatchNorm2d(opt.ngf,affine=True),
+        self.main_initial = nn.Sequential( nn.Conv2d(3,opt.ngf,kernel_size=3,stride=1,padding=1) ,
+                            get_norm(opt.ngf,opt.norm_G,opt.num_groups),
                             nn.ReLU(True)
                             )
-        if opt.nz>0:
-            self.label_noise = nn.Linear(opt.nsalient+opt.nz,opt.nsalient)
+        self.label_noise = nn.Linear(opt.nz,opt.nsalient)
         main_block=[]
         #Input is z going to series of rsidual blocks
 
         # Sets of residual blocks start
         for i in range(3):
-            main_block+= [GatedConvResBlock(opt.ngf,opt.ngf,dropout=opt.dropout_G,use_sn=opt.spectral_G,norm_layer=opt.norm_G,num_groups=opt.num_groups,res_op=opt.res_op)] #[BATCHResBlock(opt.ngf,opt.dropout)]
+            main_block+= [GatedConvResBlock(opt.ngf,opt.ngf,dropout=opt.dropout_G,use_sn=opt.spectral_G,norm_layer=opt.norm_G,num_groups=opt.num_groups,res_op=opt.res_op)]
 
 
         for i in range(opt.ngres_up_down):
             main_block += [ DownGatedConvResBlock(opt.ngf,opt.ngf,dropout=opt.dropout_G,use_sn=opt.spectral_G,norm_layer=opt.norm_G,num_groups=opt.num_groups,res_op=opt.res_op) ]
 
         for i in range(int(opt.ngres/2-opt.ngres_up_down-3)):
-            main_block+= [GatedConvResBlock(opt.ngf,opt.ngf,dropout=opt.dropout_G,use_sn=opt.spectral_G,norm_layer=opt.norm_G,num_groups=opt.num_groups,res_op=opt.res_op)] #[BATCHResBlock(opt.ngf,opt.dropout)]
+            main_block+= [GatedConvResBlock(opt.ngf,opt.ngf,dropout=opt.dropout_G,use_sn=opt.spectral_G,norm_layer=opt.norm_G,num_groups=opt.num_groups,res_op=opt.res_op)]
 
 
         for i in range(int(opt.ngres/2-opt.ngres_up_down-3)):
-            main_block+= [GatedConvResBlock(opt.ngf,opt.ngf,dropout=opt.dropout_G,use_sn=opt.spectral_G,norm_layer=opt.norm_G,num_groups=opt.num_groups,res_op=opt.res_op)] #[BATCHResBlock(opt.ngf,opt.dropout)]
+            main_block+= [GatedConvResBlock(opt.ngf,opt.ngf,dropout=opt.dropout_G,use_sn=opt.spectral_G,norm_layer=opt.norm_G,num_groups=opt.num_groups,res_op=opt.res_op)]
 
 
 
@@ -359,23 +360,21 @@ class LabelChannelGatedResnetConvResnetG(nn.Module):
             main_block += [ UpGatedConvResBlock(opt.ngf,opt.ngf,dropout=opt.dropout_G,use_sn=opt.spectral_G,norm_layer=opt.norm_G,num_groups=opt.num_groups,res_op=opt.res_op ) ]
 
         for i in range(3):
-            main_block+= [GatedConvResBlock(opt.ngf,opt.ngf,dropout=opt.dropout_G,use_sn=opt.spectral_G,norm_layer=opt.norm_G , num_groups = opt.num_groups,res_op=opt.res_op )] #[BATCHResBlock(opt.ngf,opt.dropout)]
+            main_block+= [GatedConvResBlock(opt.ngf,opt.ngf,dropout=opt.dropout_G,use_sn=opt.spectral_G,norm_layer=opt.norm_G , num_groups = opt.num_groups,res_op=opt.res_op )]
 
 
 
         # Final layer to map to 3 channel
         if opt.spectral_G:
-            main_block+=[spectral_norm(nn.Conv2d(opt.ngf,opt.output_nc,kernel_size=3,stride=1,padding=1)) ]
+            main_block+=[spectral_norm(nn.Conv2d(opt.ngf,opt.nc,kernel_size=3,stride=1,padding=1)) ]
         else:
-            main_block+=[nn.Conv2d(opt.ngf,opt.output_nc,kernel_size=3,stride=1,padding=1) ]
+            main_block+=[nn.Conv2d(opt.ngf,opt.nc,kernel_size=3,stride=1,padding=1) ]
         main_block+=[nn.Tanh()]
         self.main=nn.Sequential(*main_block)
 
         gate_block =[]
-        #gate_block+=[ nn.Linear(opt.nsalient ,opt.ngf_gate)]
         gate_block+=[ Reshape( -1, 1 ,opt.nsalient)  ]
         gate_block+=[ nn.Conv1d(1,opt.ngf_gate,kernel_size=3,stride=1,padding=1)  ]
-        #gate_block+=[ nn.InstanceNorm1d(opt.ngf_gate) ]
         gate_block+=[ nn.ReLU()]
         for i in range(opt.ngres_gate):
             gate_block+=[ResBlock1D(opt.ngf_gate,opt.dropout_gate)]
@@ -386,44 +385,36 @@ class LabelChannelGatedResnetConvResnetG(nn.Module):
 
         gate_block_mult = []
         gate_block_mult+=[ nn.Linear(opt.ngf_gate*opt.nsalient,opt.ngres*opt.ngf) ]
-        gate_block_mult+= [ nn.Sigmoid()]# [nn.Softmax()]  #[ nn.Sigmoid()]
+        gate_block_mult+= [ nn.Sigmoid()]
 
         self.gate_mult = nn.Sequential(*gate_block_mult)
 
-        if self.opt.gate_affine:
-            gate_block_add = []
-            gate_block_add+=[ nn.Linear(opt.ngf_gate*opt.nsalient,opt.ngres*opt.ngf) ]
-            gate_block_add+= [nn.Tanh()] #[nn.Sigmoid()]  #
-            self.gate_add = nn.Sequential(*gate_block_add)
+
+        gate_block_add = gate_block
+        gate_block_add+=[ nn.Linear(opt.ngf_gate*opt.nsalient,opt.ngres*opt.ngf) ]
+        gate_block_add+= [nn.Hardtanh()]
+        self.gate_add = nn.Sequential(*gate_block_add)
 
 
     def forward(self, input,labels,noise=None):
-        batchSize = input.size(0)
         input_gate = self.label_embedding(labels)
-        input_gate = input_gate.resize(batchSize,self.opt.nsalient)
-        if self.opt.nz>0:
-            input_gate=self.label_noise(torch.cat((input_gate,noise),1))
-        output_gate = self.gate(input_gate)
+        input_noise=self.label_noise(noise)
+
+        # Things are just flipped here
+        output_gate = self.gate(input_noise)
         output_gate_mult = self.gate_mult(output_gate)
-        if self.opt.gate_affine:
-            output_gate_add = self.gate_add(output_gate)
+        output_gate_add = self.gate_add(input_gate)
         output = self.main_initial(input)
         for i in range(self.opt.ngres):
             alpha = output_gate_mult[:,i*self.opt.ngf:(i+1)*self.opt.ngf]
-            alpha = alpha.resize(batchSize,self.opt.ngf,1,1)
-            if self.opt.gate_affine:
-                beta=output_gate_add[:,i*self.opt.ngf:(i+1)*self.opt.ngf]
-                beta=beta.resize(batchSize,self.opt.ngf,1,1)
-                output=self.main[i](output,alpha,beta)
-            else:
-                output=self.main[i](output,alpha)
+            alpha = alpha.resize(self.opt.batchSize,self.opt.ngf,1,1)
+            beta=output_gate_add[:,i*self.opt.ngf:(i+1)*self.opt.ngf]
+            beta=beta.resize(self.opt.batchSize,self.opt.ngf,1,1)
+            output=self.main[i](output,alpha,beta)
 
         output=self.main[self.opt.ngres](output)
         output=self.main[self.opt.ngres+1](output)
         return output
-
-
-
 
 
 class LabelChannelGatedResnetConvResnetD(nn.Module):
@@ -453,14 +444,14 @@ class LabelChannelGatedResnetConvResnetD(nn.Module):
                 sequence += [
                     spectral_norm(nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult,
                               kernel_size=kw, stride=2, padding=padw, bias=use_bias)),
-                    get_norm(ndf*nf_mult,opt.norm_D,opt.num_groups),  #norm_layer(ndf * nf_mult),
+                    get_norm(ndf*nf_mult,opt.norm_D,opt.num_groups),
                     nn.LeakyReLU(0.2, True)
                 ]
             else:
                 sequence += [
                     nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult,
                               kernel_size=kw, stride=2, padding=padw, bias=use_bias),
-                    get_norm(ndf*nf_mult,opt.norm_D,opt.num_groups),  #norm_layer(ndf * nf_mult),
+                    get_norm(ndf*nf_mult,opt.norm_D,opt.num_groups),
                     nn.LeakyReLU(0.2, True)
                 ]
 
@@ -486,13 +477,13 @@ class LabelChannelGatedResnetConvResnetD(nn.Module):
         # Sets of residual blocks start
 
         for i in range(3):
-            main_block+= [GatedConvResBlock(opt.ndf,opt.ndf,dropout=opt.dropout,use_sn=opt.spectral_D,norm_layer=opt.norm_D,num_groups=opt.num_groups,res_op=opt.res_op)] #[BATCHResBlock(opt.ngf,opt.dropout)]
+            main_block+= [GatedConvResBlock(opt.ndf,opt.ndf,dropout=opt.dropout,use_sn=opt.spectral_D,norm_layer=opt.norm_D,num_groups=opt.num_groups,res_op=opt.res_op)]
 
         for i in range(opt.ndres_down):
             main_block+= [DownGatedConvResBlock(opt.ndf,opt.ndf,dropout=opt.dropout_D,use_sn=opt.spectral_D,norm_layer=opt.norm_D,num_groups=opt.num_groups,res_op=opt.res_op)]
 
         for i in range(opt.ndres - opt.ndres_down-3  ):
-            main_block+= [GatedConvResBlock(opt.ndf,opt.ndf,dropout=opt.dropout_D,use_sn=opt.spectral_D,norm_layer=opt.norm_D , num_groups=opt.num_groups ,res_op=opt.res_op)] #[BATCHResBlock(opt.ngf,opt.dropout)]
+            main_block+= [GatedConvResBlock(opt.ndf,opt.ndf,dropout=opt.dropout_D,use_sn=opt.spectral_D,norm_layer=opt.norm_D , num_groups=opt.num_groups ,res_op=opt.res_op)]
 
 
         self.main=nn.Sequential(*main_block)
@@ -502,8 +493,6 @@ class LabelChannelGatedResnetConvResnetD(nn.Module):
         gate_block+=[ nn.Conv1d(1,opt.ngf_gate,kernel_size=3,stride=1,padding=1)  ]
 
 
-        #gate_block+=[ nn.Linear(opt.nsalient ,opt.ndf_gate)]
-        #gate_block+=[ nn.InstanceNorm1d(opt.ngf_gate) ]
         gate_block+=[ nn.ReLU()]
         for i in range(opt.ndres_gate):
             gate_block+=[ResBlock1D(opt.ndf_gate,opt.dropout_gate)]
@@ -514,14 +503,14 @@ class LabelChannelGatedResnetConvResnetD(nn.Module):
 
         gate_block_mult=[]
         gate_block_mult+=[ nn.Linear(opt.ndf_gate*opt.nsalient,opt.ndres*opt.ndf) ]
-        gate_block_mult+= [nn.Sigmoid()] #[nn.Softmax()]  #[ nn.Sigmoid()]
+        gate_block_mult+= [nn.Sigmoid()]
 
         self.gate_mult = nn.Sequential(*gate_block_mult)
 
         if opt.gate_affine:
             gate_block_add = []
             gate_block_add+=[ nn.Linear(opt.ndf_gate*opt.nsalient,opt.ndres*opt.ndf) ]
-            gate_block_add+=[nn.Tanh()] #[nn.Sigmoid()]  #[nn.Tanh()]
+            gate_block_add+=[nn.Tanh()]
             self.gate_add=nn.Sequential(*gate_block_add)
 
     def forward(self, img, labels):

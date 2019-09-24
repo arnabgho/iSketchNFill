@@ -33,7 +33,6 @@ def define_G(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropo
         raise NotImplementedError('Generator model name [%s] is not recognized' % which_model_netG)
     if len(gpu_ids) > 0:
         netG.cuda(gpu_ids[0])
-    #init_weights(netG, init_type=init_type)
     return netG
 
 
@@ -41,7 +40,6 @@ def define_D(input_nc, ndf, which_model_netD,
              n_layers_D=3, norm='batch', use_sigmoid=False, init_type='normal', gpu_ids=[],opt={}):
     netD = None
     use_gpu = len(gpu_ids) > 0
-    #norm_layer = get_norm_layer(norm_type=norm)
 
     if use_gpu:
         assert(torch.cuda.is_available())
@@ -52,7 +50,6 @@ def define_D(input_nc, ndf, which_model_netD,
                                   which_model_netD)
     if use_gpu:
         netD.cuda(gpu_ids[0])
-    #init_weights(netD, init_type=init_type)
     return netD
 
 
@@ -100,13 +97,9 @@ class GatedResnetBlock(nn.Module):
         # Submodules
         self.conv_0 = spectral_norm(nn.Conv2d(self.fin, self.fhidden, 3, stride=1, padding=1))
         self.conv_1 = spectral_norm(nn.Conv2d(self.fhidden, self.fout, 3, stride=1, padding=1, bias=is_bias))
-        #self.conv_0 = nn.Conv2d(self.fin, self.fhidden, 3, stride=1, padding=1)
-        #self.conv_1 = nn.Conv2d(self.fhidden, self.fout, 3, stride=1, padding=1, bias=is_bias)
 
-        #self.norm = get_norm(self.fout,norm_layer)
         if self.learned_shortcut:
             self.conv_s = spectral_norm( nn.Conv2d(self.fin, self.fout, 1, stride=1, padding=0, bias=False))
-            #self.conv_s = nn.Conv2d(self.fin, self.fout, 1, stride=1, padding=0, bias=False)
 
 
 

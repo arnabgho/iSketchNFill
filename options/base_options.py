@@ -18,10 +18,8 @@ class BaseOptions():
         self.parser.add_argument('--edges_outlines_dataset', action='store_true', help='autocomplete database used')
         self.parser.add_argument('--lambda_info_con', type=float, default=1.0, help='weight for cycle loss (A -> B -> A)')
         self.parser.add_argument('--lambda_info_dis', type=float, default=1.0, help='weight for cycle loss (A -> B -> A)')
-        self.parser.add_argument('--dataroot', required=True, help='path to images (should have subfolders trainA, trainB, valA, valB, etc)')
+        self.parser.add_argument('--dataroot', help='path to images (should have subfolders trainA, trainB, valA, valB, etc)')
         self.parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
-        self.parser.add_argument('--which_block', type=int, default=1, help='input batch size')
-        self.parser.add_argument('--num_rep', type=int, default=4, help='input batch size')
         self.parser.add_argument('--loadSize', type=int, default=286, help='scale images to this size')
         self.parser.add_argument('--fineSize', type=int, default=256, help='then crop to this size')
         self.parser.add_argument('--sparseSize', type=int, default=8, help='then crop to this size')
@@ -71,11 +69,9 @@ class BaseOptions():
         self.parser.add_argument('--no_flip', action='store_true', help='if specified, do not flip the images for data augmentation')
         self.parser.add_argument('--init_type', type=str, default='xavier', help='network initialization [normal|xavier|kaiming|orthogonal]')
         self.parser.add_argument('--init_variance', type=float, default=0.02, help='variance of the initialization distribution')
-        self.parser.add_argument('--res_op', type=str, default='max', help='which residual operation [add|max]')
+        self.parser.add_argument('--res_op', type=str, default='add', help='which residual operation [add|max]')
 
-        self.parser.add_argument('--ndiscrete', type=int, default=10, help='the number of discrete latent for the infogan variant')
         self.parser.add_argument('--n_classes', type=int, default=10, help='the number of classes for the label gated pix2pix variant')
-        self.parser.add_argument('--ncontinuous', type=int, default=2, help='the number of continuous latent for the infogan variant')
         self.parser.add_argument('--nc', type=int, default=3, help='Number of channels in the images')
         self.parser.add_argument('--wgan_gp_lambda', type=float, default=10.0, help='Number of channels in the images')
         self.parser.add_argument('--wgan_gp_center', type=float, default=1.0, help='Number of channels in the images')
@@ -86,14 +82,7 @@ class BaseOptions():
         self.parser.add_argument('--spectral_G', dest='spectral_G',action='store_true' ,help='whether to use spectral normalization in the generator')
         self.parser.add_argument('--gate_affine',dest='gate_affine',action='store_true')
         self.parser.add_argument('--no_sparse_add',dest='no_sparse_add',action='store_true')
-        self.parser.add_argument('--channel_generator',dest='channel_generator',action='store_true')
         self.parser.add_argument('--num_interpolate', type=int, default=20, help='Number of channels in the images')
-        # From SPADE
-        self.parser.add_argument('--use_vae', action='store_true', help='enable training with an image encoder.')
-        self.parser.add_argument('--label_nc', type=int, default=3, help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
-
-        self.parser.add_argument('--no_instance', action='store_true', help='if specified, do *not* add instance map as input')
-        #self.parser.add_argument('--gate_mul',dest='gate_affine',action='store_false')
         self.initialized = True
 
     def parse(self):
