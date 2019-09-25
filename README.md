@@ -18,17 +18,16 @@ In order to use a single model for a wide array of object classes, we introduce 
 - CPU or NVIDIA GPU + CUDA CuDNN
 
 ## Getting Started
-
+- Clone this repo:
+```
+git clone https://github.com/arnabgho/iSketchNFill
+cd iSketchNFill
+```
 - Install PyTorch 1.0+ and dependencies from http://pytorch.org
 - Install Torchvision
 - Install all requirements
 ```
 pip install -r requirements.txt
-```
-- Clone this repo:
-```
-git clone https://github.com/arnabgho/iSketchNFill
-cd iSketchNFill
 ```
 
 

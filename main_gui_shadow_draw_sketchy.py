@@ -162,8 +162,8 @@ class GANGATEGui(QWidget):
         vbox_final.addWidget(controlBox)
         self.setLayout(vbox_final)
 
-        self.bBicycle.setChecked(True)
-
+        self.bTeddy.setChecked(True)
+        self.labelId=5
         self.bDrawStroke.setChecked(True)
 
         self.bBicycle.clicked.connect(self.Bicycle)
