@@ -37,8 +37,8 @@ model = create_model(opt)
 
 opt2 = copy.deepcopy(opt)
 
-opt2.name = opt.name_pix2pix #'label_channel_pix2pix_lsgan_1'
-opt2.model = opt.model_pix2pix  #'stochastic_label_channel_gated_pix2pix'
+opt2.name = opt.name_pix2pix
+opt2.model = opt.model_pix2pix
 opt2.ndisc_out_filters = 1
 opt2.ndres_down = 4
 opt2.ngres = 16
@@ -49,9 +49,9 @@ opt2.spectral_G = True
 opt2.spectral_D = True
 opt2.norm_G = 'instance'
 opt2.norm_D = 'instance'
-opt2.checkpoints_dir = opt2.checkpoints_dir_pix2pix  #'checkpoints_stochastic_lsgan'
+opt2.checkpoints_dir = opt2.checkpoints_dir_pix2pix
 opt2.res_op = 'add'
-opt2.which_epoch = opt.which_epoch_pix2pix #510
+opt2.which_epoch = opt.which_epoch_pix2pix
 opt2.shadow = True
 opt2.nz = 8
 opt2.input_nc = 3

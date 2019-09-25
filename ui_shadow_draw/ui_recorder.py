@@ -23,12 +23,6 @@ class UIRecorder:
             npnts = len(points)
             for i in range(0, npnts - 5, 5):
                 painter.drawLine(points[i], points[i + 5])
-            #if t is 'patch':
-            #    w=patch.shape[0]
-            #    h=patch.shape[1]
-            #    qImg = QImage(patch.tostring(), w, h, QImage.Format_RGB888)
-            #    painter.drawImage(points.x()-w/2, points.y()-h/2, qImg)
-
 
     def reset(self):
         del self.strokes[:]

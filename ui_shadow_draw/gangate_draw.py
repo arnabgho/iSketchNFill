@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import * #QWidget, QApplication
-from PyQt5.QtGui import * #QPainter, QPainterPath
-from PyQt5.QtCore import * #Qt
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 import sys
 
 import numpy as np
@@ -17,7 +17,7 @@ class GANGATEDraw(QWidget):
         self.moving_points = []
         self.nps = win_size
         self.scale = win_size /  float(img_size)
-        self.brushWidth = int(2 * self.scale) #int( 8 * self.scale)
+        self.brushWidth = int(2 * self.scale)
         self.cutWidth = 96
         self.warpWidth = int(4*self.scale)
 
@@ -26,7 +26,7 @@ class GANGATEDraw(QWidget):
         self.uir = UIRecorder()
         self.img_size = img_size
         self.interactive=interactive
-        self.color = QColor(0,0,0)  #QColor(0, 0, 0)  # shadow mode: default color black
+        self.color = QColor(0,0,0)
 
         self.rgb_color = 0
 
@@ -97,8 +97,6 @@ class GANGATEDraw(QWidget):
         self.frame_id = -1
         self.image_id = 0
         self.shadow_image=None
-        #self.moving = False
-        #self.warping = False
         self.warp_start = None
         self.warp_end = None
         self.brushWidth = int(1 * self.scale)
@@ -114,7 +112,6 @@ class GANGATEDraw(QWidget):
         self.uiSketch.update_brushwidth(self.brushWidth)
         self.color = QColor(255,255,255)
         self.rgb_color = 255
-        #self.update()
 
     def scribble(self):
         if self.prev_brushWidth is None:
@@ -122,27 +119,20 @@ class GANGATEDraw(QWidget):
         else:
             self.brushWidth = self.prev_brushWidth
         self.scribbling = True
-        #self.brushWidth = int(1 * self.scale)
         self.uiSketch.update_brushwidth(self.brushWidth)
         self.color = QColor(0,0,0)
         self.rgb_color = 0
-        #self.update()
     def move_stroke(self):
         self.moving = True
         self.warping = False
         self.moving_points = []
         self.moving_points.append(self.pos)
-        #self.update()
 
     def warp_stroke(self):
         self.warping = True
         self.moving = False
         self.brushWidth = int(2 * self.scale)
-        #self.ui_sketch.update_brushwidth(self.brushWidth)
         print("warping")
-        #self.warping_points = []
-        #self.moving_points.append(self.pos)
-        #self.update()
 
     def draw_stroke(self):
         self.warping = False
@@ -251,10 +241,8 @@ class GANGATEDraw(QWidget):
             if self.moving:
                 self.moving_points.append(self.pos)
             elif self.warping:
-                #self.warp_start = self.pos
                 self.warp_start = self.findNearestControlPoint(self.pos)
             else:
-                #self.scribble()
                 self.points.append(self.pos)
             self.update()
 
@@ -285,7 +273,6 @@ class GANGATEDraw(QWidget):
                 self.moving_points.append(self.pos)
             if self.warping:
                 pass
-                #self.warp_start = self.findNearestControlPoint(self.pos)
             else:
                 self.points.append(self.pos)
                 self.update_ui()
@@ -298,7 +285,6 @@ class GANGATEDraw(QWidget):
 
             del self.points[:]
             self.isPressed = False
-            #self.moving = False
             del self.moving_points[:]
             self.lastDraw = 0
             self.scribble()
@@ -306,10 +292,8 @@ class GANGATEDraw(QWidget):
                 self.warp_end = self.pos
                 if self.warp_start is not None:
                     self.update_ui()
-                #self.warping=False
                     self.warp_control_points = self.update_control_points(self.warp_start,self.warp_end)
                     self.warp_start = None
-                #self.warp_control_points = []
         if self.interactive:
             self.parent().parent().generate()
     def getImage(self):

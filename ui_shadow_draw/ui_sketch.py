@@ -38,7 +38,6 @@ class UISketch:
                 cv2.line(self.img, pnt1, pnt2, (c,c,c), self.width)
             else:
                 cv2.line(self.img, pnt1, pnt2, c, self.width)
-            #cv2.line(self.mask, pnt1, pnt2, 255, self.width)
 
     def warp_img(self,pos,move_pos,warp_control_points):
         pos_x = int(pos.x()/self.scale) / (1.0*self.img_size)
@@ -130,8 +129,6 @@ class UISketch:
     def set_shadow_img(self,cv2_img):
         if cv2_img is not None:
             self.shadow_img= cv2_img
-            #self.shadow_img[:,:,0]= 0   #255
-            #self.shadow_img[:,:,2]= 255 #255
 
     def show_img(self):
         cv2.imshow('ImageWindow', self.img)

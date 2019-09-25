@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import * #QWidget, QApplication
-from PyQt5.QtGui import * #QPainter, QPainterPath
-from PyQt5.QtCore import * #Qt
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 import sys
 
 import numpy as np
@@ -66,7 +66,5 @@ class GANGATEVis(QWidget):
 
     def mouseMoveEvent(self,event):
         self.pos = self.round_point(event.pos())
-        #print(self.pos.x())
-        #print(self.pos.y())
         if not self.disable_browser:
             self.parent().parent().browse(self.pos.x(),self.pos.y())
