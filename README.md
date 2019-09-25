@@ -88,6 +88,13 @@ python main_gui_shadow_draw_sketch.py --name wgangp_sparse_label_channel_pix2pix
 * **Enable Shadows**: This feature enables the multiple shadows to be overlayed with the the drawing pad. Otherwise only 1 autocompletion is shown.
 ***
 
+#### Tips and Tricks for Using the Interface
+* For some classes the brush can be made thinner for better feedback.
+* If the user draws close to the shadows they can snap between modes such as go to different shapes of watermelons.
+* With a small stroke the user can try to move the stroke to see possible autocompletions that depict different sizes/shapes of the object.
+
+***
+
 - Other datasets and training scripts coming soon !
 
 ## Citation
