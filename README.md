@@ -34,7 +34,7 @@ pip install -r requirements.txt
 ### Interactive session with a pre-trained model (iSketchNFill)
 
 <p align="center">
-  <img  height="300" src='docs/resources/gifs/cupcake.gif'>
+  <img  height="200" src='docs/resources/gifs/cupcake.gif'>
 </p>
 
 - Download pretrained model (Scribble Dataset)
@@ -75,7 +75,7 @@ python main_gui_shadow_draw_sketch.py --name wgangp_sparse_label_channel_pix2pix
 ### Sketch Emojis
 
 <p align="center">
-  <img  height="300" src='docs/resources/gifs/emoji.gif'>
+  <img  height="200" src='docs/resources/gifs/emoji.gif'>
 </p>
 
 ```
