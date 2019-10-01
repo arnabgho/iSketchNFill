@@ -66,6 +66,21 @@ bash scripts/download_pretrained_car_outlines.sh
 ```
 python main_gui_shadow_draw_sketch.py --name wgangp_sparse_label_channel_pix2pix_autocomplete_multiscale_nz_256_nc_1_nf_32_gp_0 --model sparse_wgangp_pix2pix --checkpoints_dir checkpoints_sparse_cars_outlines --gpu_ids 0 --nz 256 --sparseSize 4 --fineSize 128 --ngf 32 --ndf 32 --num_interpolate 6  --input_nc 1 --output_nc 1 --n_classes 1 --test_std 0.8
 ```
+
+***
+### Sketch Emojis
+
+<p align="center">
+  <img width="460" height="300" src='docs/resources/gifs/emoji.gif'>
+</p>
+
+```
+bash scripts/download_pretrained_emoji.sh
+```
+
+```
+python main_gui_shadow_draw_pix2pix.py --name wgangp_sparse_label_channel_pix2pix_autocomplete_multiscale_nz_256_nc_1_nf_32_gp_0_multigpu --model sparse_wgangp_pix2pix  --checkpoints_dir checkpoints_sparse_emoji --gpu_ids 0 --nz 256 --sparseSize 4 --fineSize 128 --ngf 32 --ndf 32 --num_interpolate 8 --input_nc 1 --output_nc 1 --checkpoints_dir_pix2pix ./checkpoints --name_pix2pix scribble2emoji --model_pix2pix pix2pixhd --n_classes 1
+```
 ***
 # Interface
 
@@ -91,6 +106,7 @@ python main_gui_shadow_draw_sketch.py --name wgangp_sparse_label_channel_pix2pix
 * For some classes the brush can be made thinner for better feedback.
 * If the user draws close to the shadows they can snap between modes such as go to different shapes of watermelons.
 * With a small stroke the user can try to move the stroke to see possible autocompletions that depict different sizes/shapes of the object.
+
 
 ***
 

@@ -73,10 +73,12 @@ class BaseOptions():
 
         self.parser.add_argument('--n_classes', type=int, default=10, help='the number of classes for the label gated pix2pix variant')
         self.parser.add_argument('--nc', type=int, default=3, help='Number of channels in the images')
+        self.parser.add_argument('--label_nc', type=int, default=3, help='Number of channels in the images')
         self.parser.add_argument('--wgan_gp_lambda', type=float, default=10.0, help='Number of channels in the images')
         self.parser.add_argument('--wgan_gp_center', type=float, default=1.0, help='Number of channels in the images')
 
         self.parser.add_argument('--img_conditional_D',dest='img_conditional_D',action='store_true' , help='whether to use spectral normalization in the discriminator')
+        self.parser.add_argument('--use_vae',dest='use_vae',action='store_true' , help='whether to use VAE for pix2pixhd')
         self.parser.add_argument('--spectral_Q',dest='spectral_Q',action='store_true' , help='whether to use spectral normalization in the discriminator')
         self.parser.add_argument('--spectral_D', dest='spectral_D',action='store_true' ,help='whether to use spectral normalization in the discriminator')
         self.parser.add_argument('--spectral_G', dest='spectral_G',action='store_true' ,help='whether to use spectral normalization in the generator')

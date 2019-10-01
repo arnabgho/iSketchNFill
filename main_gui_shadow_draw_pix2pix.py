@@ -12,8 +12,8 @@ from ui_shadow_draw.ui_recorder import UIRecorder
 import qdarkstyle
 from ui_shadow_draw.gangate_draw import GANGATEDraw
 from ui_shadow_draw.gangate_vis import GANGATEVis
+import copy
 from data.base_dataset import get_transform
-
 
 import time
 import os
@@ -34,6 +34,35 @@ opt.loadSize=256
 transform = get_transform(opt)
 model = create_model(opt)
 
+
+opt2 = copy.deepcopy(opt)
+
+opt2.name = opt.name_pix2pix
+opt2.model = opt.model_pix2pix
+opt2.ndisc_out_filters = 1
+opt2.ndres_down = 4
+opt2.ngres = 16
+opt2.ndres = 16
+opt2.ngf = 64
+opt2.ndf = 64
+opt2.spectral_G = True
+opt2.spectral_D = True
+opt2.norm_G = 'instance'
+opt2.norm_D = 'instance'
+opt2.checkpoints_dir = opt2.checkpoints_dir_pix2pix
+opt2.res_op = 'add'
+opt2.which_epoch = opt.which_epoch_pix2pix
+opt2.shadow = True
+opt2.nz = 8
+opt2.input_nc = 3
+opt2.output_nc = 3
+opt2.loadSize = 256
+opt2.fineSize = 256
+
+
+transform_color = get_transform(opt2)
+model_color = create_model(opt2)
+
 class GANGATEGui(QWidget):
     def __init__(self,win_size= 256 ,img_size = 256):
         QWidget.__init__(self)
@@ -44,8 +73,10 @@ class GANGATEGui(QWidget):
         self.drawWidget = GANGATEDraw(win_size=self.win_size,img_size=self.img_size)
         self.drawWidget.setFixedSize(win_size,win_size)
 
-        self.visWidget = GANGATEVis(win_size=self.win_size,img_size=self.img_size)
-        self.visWidget.setFixedSize(win_size,win_size)
+        self.visWidget_color = GANGATEVis(win_size=self.win_size,img_size=self.img_size,disable_browser=True)
+        self.visWidget_color.setFixedSize(win_size,win_size)
+
+
 
         vbox = QVBoxLayout()
 
@@ -56,16 +87,15 @@ class GANGATEGui(QWidget):
         self.drawWidgetBox.setLayout(vbox_t)
         vbox.addWidget(self.drawWidgetBox)
 
-        self.labelId=0
 
-
-
-        self.bGenerate = QPushButton('Generate')
+        self.bGenerate = QPushButton('Generate !')
         self.bGenerate.setToolTip("This button generates the final image to render")
 
 
-        self.bReset = QPushButton('Reset')
+        self.bReset = QPushButton('Reset !')
         self.bReset.setToolTip("This button resets the drawing pad !")
+
+
 
         self.bRandomize = QPushButton('Dice')
         self.bRandomize.setToolTip("This button generates new set of generations the drawing pad !")
@@ -80,24 +110,29 @@ class GANGATEGui(QWidget):
         self.bDrawStroke = QRadioButton('Draw Stroke')
         self.bDrawStroke.setToolTip("This button resets the drawing pad !")
 
-
+        self.bEnableShadows = QCheckBox('Enable Shadows')
+        self.bEnableShadows.toggle()
 
 
         hbox = QHBoxLayout()
         hbox.addLayout(vbox)
 
-        vbox3 = QVBoxLayout()
+
+        vbox4 = QVBoxLayout()
         self.visWidgetBox = QGroupBox()
         self.visWidgetBox.setTitle('Generations')
 
-        vbox_t3 = QVBoxLayout()
-        vbox_t3.addWidget(self.visWidget)
-        self.visWidgetBox.setLayout(vbox_t3)
-        vbox3.addWidget(self.visWidgetBox)
+        vbox_t4 = QVBoxLayout()
+        vbox_t4.addWidget(self.visWidget_color)
+        self.visWidgetBox.setLayout(vbox_t4)
+        vbox4.addWidget(self.visWidgetBox)
 
 
 
-        bhbox_controls = QGridLayout()
+        hbox.addLayout(vbox4)
+
+
+        bhbox_controls = QGridLayout()  #QHBoxLayout()
         bGroup_controls = QButtonGroup(self)
 
         bGroup_controls.addButton(self.bReset)
@@ -111,9 +146,7 @@ class GANGATEGui(QWidget):
         bhbox_controls.addWidget(self.bDrawStroke,0,2)
         bhbox_controls.addWidget(self.bMoveStroke,0,3)
         bhbox_controls.addWidget(self.bWarpStroke,0,4)
-
-        hbox.addLayout(vbox3)
-
+        bhbox_controls.addWidget(self.bEnableShadows,0,5)
         controlBox = QGroupBox()
         controlBox.setTitle('Controls')
 
@@ -124,16 +157,26 @@ class GANGATEGui(QWidget):
         vbox_final.addWidget(controlBox)
         self.setLayout(vbox_final)
 
-
         self.bDrawStroke.setChecked(True)
 
+
+        self.enable_shadow = True
+
+        self.labelId=0
         self.bGenerate.clicked.connect(self.generate)
         self.bReset.clicked.connect(self.reset)
         self.bRandomize.clicked.connect(self.randomize)
         self.bMoveStroke.clicked.connect(self.move_stroke)
         self.bWarpStroke.clicked.connect(self.warp_stroke)
         self.bDrawStroke.clicked.connect(self.draw_stroke)
+        self.bEnableShadows.stateChanged.connect(self.toggle_shadow)
 
+    def toggle_shadow(self,state):
+        if state == Qt.Checked:
+            self.enable_shadow=True
+        else:
+            self.enable_shadow=False
+        self.generate()
 
     def get_network_input(self):
         cv2_scribble = self.drawWidget.getDrawImage()
@@ -151,33 +194,17 @@ class GANGATEGui(QWidget):
                 'B': B,'A_paths': '', 'B_paths': '', 'label': label }
         return data
 
-    def browse(self,pos_y,pos_x):
-        num_rows = int(opt.num_interpolate/2)
-        num_cols = 2
-        div_rows = int(self.img_size/num_rows)
-        div_cols = int(self.img_size/num_cols)
+    def get_network_input_color(self):
+        pil_scribble = Image.open('imgs/test_0_L_fake_B_inter.png').convert('RGB')
+        pil_scribble = pil_scribble.resize((256,256),Image.ANTIALIAS)
+        A = transform_color(pil_scribble)
+        A=A.resize_(1,3,256,256)
+        B = A
+        label = torch.LongTensor([[self.labelId]])
+        data = {'A': A,'A_sparse':A,'A_mask':A,
+                'B': B,'A_paths': '', 'B_paths': '', 'label': label }
+        return data
 
-        which_row = int(pos_x / div_rows)
-        which_col = int(pos_y / div_cols)
-
-
-        cv2_gallery = cv2.imread('imgs/fake_B_gallery.png')
-        cv2_gallery = cv2.resize(cv2_gallery,(self.img_size,self.img_size))
-
-        cv2_gallery = cv2.rectangle(cv2_gallery, ( which_col * div_cols , which_row * div_rows  ) , ( (which_col + 1) * div_cols , (which_row + 1) * div_rows  ) , (0,255,0) , 8)
-        self.visWidget.update_vis_cv2(cv2_gallery)
-
-        cv2_img = cv2.imread('imgs/test_fake_B_shadow.png')
-        cv2_img = cv2.resize(cv2_img,(self.img_size,self.img_size))
-
-        which_highlight = which_row * 2 + which_col
-        img_gray = cv2.imread('imgs/test_%d_L_fake_B_inter.png' % (which_highlight),cv2.IMREAD_GRAYSCALE)
-        img_gray = cv2.resize(img_gray,(self.img_size,self.img_size))
-        (thresh,im_bw)=cv2.threshold(img_gray,128,255,cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-        cv2_img[np.where(im_bw==[0])] = [0,255,0]
-
-
-        self.drawWidget.setShadowImage(cv2_img)
 
     def generate(self):
         #pass
@@ -192,17 +219,31 @@ class GANGATEGui(QWidget):
             util.save_image(image_numpy,save_path)
         ## convert back from pil image to cv2 image
 
-        cv2_img = cv2.imread('imgs/test_fake_B_shadow.png')
+        if self.enable_shadow:
+            cv2_img = cv2.imread('imgs/test_fake_B_shadow.png')
+        else:
+            cv2_img = cv2.imread('imgs/test_0_L_fake_B_inter.png')
+
         cv2_img = cv2.resize(cv2_img,(self.img_size,self.img_size))
-
-        img_gray = cv2.imread('imgs/test_0_L_fake_B_inter.png',cv2.IMREAD_GRAYSCALE)
-        img_gray = cv2.resize(img_gray,(self.img_size,self.img_size))
-        (thresh,im_bw)=cv2.threshold(img_gray,128,255,cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-
-
         self.drawWidget.setShadowImage(cv2_img)
 
-        self.visWidget.update_vis('imgs/fake_B_gallery.png')
+
+
+        data = self.get_network_input_color()
+        model_color.set_input(data)
+        model_color.test()
+        visuals = model_color.get_current_visuals()
+
+        image_dir = './imgs'
+
+        for label,image_numpy in visuals.items():
+            image_name = 'test_color_%s.png' % (label)
+            save_path = os.path.join(image_dir,image_name)
+            util.save_image(image_numpy,save_path)
+
+        self.visWidget_color.update_vis('imgs/test_color_fake_B.png')
+
+
 
     def reset(self):
         self.drawWidget.reset()
