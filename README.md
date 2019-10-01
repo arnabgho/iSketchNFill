@@ -75,7 +75,7 @@ python main_gui_shadow_draw_sketch.py --name wgangp_sparse_label_channel_pix2pix
 ### Sketch Emojis
 
 <p align="center">
-  <img  height="200" src='docs/resources/gifs/emoji.gif'>
+  <img  height="300" src='docs/resources/gifs/emoji.gif'>
 </p>
 
 ```
