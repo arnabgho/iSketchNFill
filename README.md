@@ -114,6 +114,20 @@ python main_gui_shadow_draw_pix2pix.py --name wgangp_sparse_label_channel_pix2pi
 
 ***
 
+## Train Sketch Autocomplete Models
+
+Prepare the training data for training autocomplete model.
+The original data for the emoji is from [Cartoon Set](https://google.github.io/cartoonset/download.html) collected by Google.
+```
+bash scripts/train_autocomplete_emoji.sh
+```
+
+Train the autocomplete model
+
+```
+python train.py --name wgangp_sparse_label_channel_pix2pix_autocomplete_multiscale_nz_256_nc_1_nf_32_gp_0_multigpu --model sparse_wgangp_pix2pix --dataroot ../data/autocomplete-cartoons/  --lambda_A 0.0 --lambda_GAN 1 --niter 800  --lr_d 1e-4 --lr_g 1e-4 --checkpoints_dir checkpoints_sparse_cartoons --batchSize 128 --gpu_ids 0 --save_epoch_freq 1 --nz 256 --sparseSize 4 --fineSize 128 --ngf 32 --ndf 32 --autocomplete_dataset_outline  --img_conditional_D --no_lsgan --input_nc 1 --output_nc 1
+```
+
 - Other datasets and training scripts coming soon !
 
 ## Citation

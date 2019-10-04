@@ -49,10 +49,7 @@ class SparseWGANGPPix2PixModel(BaseModel):
             self.test_noise= self.get_z_random(opt.num_interpolate,opt.nz)
             self.test_noise.normal_(0,0.2)
         # load/define networks
-        if opt.which_model_gated_netG=='pix2pix':
-            opt.which_model_netG = 'ChannelGatedResnetGenerator'
-        else :
-            opt.which_model_netG = 'GAN_stability_Generator'
+        opt.which_model_netG = 'GAN_stability_Generator'
 
 
         self.netG = networks_sparse.define_G(opt.input_nc, opt.output_nc, opt.ngf,
@@ -61,30 +58,23 @@ class SparseWGANGPPix2PixModel(BaseModel):
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         if self.isTrain:
             use_sigmoid = opt.no_lsgan
-            opt.which_model_netD = 'GAN_stability_Discriminator' #'LabelGatedSparseDiscriminator'
+            opt.which_model_netD = 'GAN_stability_Discriminator'
             self.netD = networks_sparse.define_D(opt.input_nc + opt.output_nc, opt.ndf,
                                           opt.which_model_netD,
                                           opt.n_layers_D, opt.norm, use_sigmoid, opt.init_type, self.gpu_ids,opt)
 
-            #if torch.cuda.device_count() > 1:
-            #    print("Let's use", torch.cuda.device_count(), "GPUs!")
-            #        # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
-            #    self.netD = nn.DataParallel(self.netD)
+            if self.isTrain:
+                self.netD = nn.DataParallel(self.netD)
+                self.netD.to(device)
+            else:
+                self.netD.cuda()
 
-            #    self.netD.to(device)
-            #else:
-            #    self.netD.cuda()
-            self.netD.cuda()
+        if self.isTrain:
+            self.netG = nn.DataParallel(self.netG)
+            self.netG.to(device)
+        else:
+            self.netG.cuda()
 
-        #if torch.cuda.device_count() > 1:
-        #    print("Let's use", torch.cuda.device_count(), "GPUs!")
-        #        # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
-        #    self.netG = nn.DataParallel(self.netG)
-
-        #    self.netG.to(device)
-        #else:
-        #    self.netG.cuda()
-        self.netG.cuda()
         if not self.isTrain or opt.continue_train:
             self.load_network(self.netG, 'G', opt.which_epoch)
             if self.isTrain:

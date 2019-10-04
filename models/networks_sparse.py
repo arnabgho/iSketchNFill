@@ -40,11 +40,11 @@ def define_D(input_nc, ndf, which_model_netD,
              n_layers_D=3, norm='batch', use_sigmoid=False, init_type='normal', gpu_ids=[],opt={}):
     netD = None
     use_gpu = len(gpu_ids) > 0
-
     if use_gpu:
         assert(torch.cuda.is_available())
-    elif which_model_netD == 'GAN_stability_Discriminator':
+    if which_model_netD == 'GAN_stability_Discriminator':
         netD = GAN_stability_Discriminator(opt)
+        print(netD)
     else:
         raise NotImplementedError('Discriminator model name [%s] is not recognized' %
                                   which_model_netD)
