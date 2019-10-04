@@ -125,8 +125,20 @@ bash scripts/train_autocomplete_emoji.sh
 Train the autocomplete model
 
 ```
-python train.py --name wgangp_sparse_label_channel_pix2pix_autocomplete_multiscale_nz_256_nc_1_nf_32_gp_0_multigpu --model sparse_wgangp_pix2pix --dataroot ../data/autocomplete-cartoons/  --lambda_A 0.0 --lambda_GAN 1 --niter 800  --lr_d 1e-4 --lr_g 1e-4 --checkpoints_dir checkpoints_sparse_cartoons --batchSize 128 --gpu_ids 0 --save_epoch_freq 1 --nz 256 --sparseSize 4 --fineSize 128 --ngf 32 --ndf 32 --autocomplete_dataset_outline  --img_conditional_D --no_lsgan --input_nc 1 --output_nc 1
+python train.py --name wgangp_sparse_label_channel_pix2pix_autocomplete_multiscale_nz_256_nc_1_nf_32_gp_0_multigpu --model sparse_wgangp_pix2pix --dataroot ../data/autocomplete-cartoons/  --lambda_A 0.0 --lambda_GAN 1 --niter 800  --lr_d 1e-4 --lr_g 1e-4 --checkpoints_dir checkpoints_sparse_cartoons --batchSize 128 --gpu_ids 0 --save_epoch_freq 1 --nz 256 --sparseSize 4 --fineSize 128 --ngf 32 --ndf 32 --autocomplete_dataset_outline  --img_conditional_D --input_nc 1 --output_nc 1
 ```
+
+### Tips for training
+
+* Higher batch sizes provide very stable gradients and training, so utilize the maximum batch size you can. The training scripts are set to train on Multi-Gpus so utilize it.
+
+* The [Zero Centred Gradient Penalty](https://arxiv.org/pdf/1801.04406.pdf) helps stabilize the training to a large extent.
+
+* If the model diverges in your dataset, reduce the learning rate of the generator and discriminator to 1e-5, and train longer. This can be useful in scenarios where you can only have smaller batch sizes.
+
+* The preparation script first creates the required folders. It generates partial sketch images to simulate the different partial sketches the user will provide.
+
+* In case one wants to train the autocomplete model on their own dataset, they have to first extract the edges using [Im2Pencil](https://github.com/Yijunmaverick/Im2Pencil). The edges need to be simplified using [Sketch Simplification](https://github.com/bobbens/sketch_simplification). Scripts for doing these 2 are coming.  
 
 - Other datasets and training scripts coming soon !
 
