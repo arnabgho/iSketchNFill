@@ -153,4 +153,4 @@ If you use this code for your research, please cite our paper.
 }
 ```
 ## Acknowledgement
-Code is inspired by [pytorch-CycleGAN-and-pix2pix]( https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix ). The UI is inspired by [iGAN] (https://github.com/junyanz/iGAN). The pix2pixhd implementation is from [SPADE] (https://github.com/NVlabs/SPADE). The warp functionality is from [Moving-Least-Squares](https://github.com/Jarvis73/Moving-Least-Squares). 
+Code is inspired by [pytorch-CycleGAN-and-pix2pix]( https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix ). The UI is inspired by [iGAN](https://github.com/junyanz/iGAN). The pix2pixhd implementation is from [SPADE](https://github.com/NVlabs/SPADE). The warp functionality is from [Moving-Least-Squares](https://github.com/Jarvis73/Moving-Least-Squares). 
