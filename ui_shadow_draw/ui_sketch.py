@@ -1,13 +1,13 @@
 import numpy as np
 import cv2
 import ui_shadow_draw.thinplate as tps
+from ui_shadow_draw.img_utils import *
 
-def warp_image_cv(img, c_src, c_dst, dshape=None):
-    dshape = dshape or img.shape
-    theta = tps.tps_theta_from_points(c_src, c_dst, reduced=True)
-    grid = tps.tps_grid(theta, c_dst, dshape)
-    mapx, mapy = tps.tps_grid_to_remap(grid, img.shape)
-    return cv2.remap(img, mapx, mapy, cv2.INTER_CUBIC , borderValue=(255,255,255))
+def warp_image_cv(img,c_src,c_dst,dshape=None):
+    transformed_image = mls_rigid_deformation_inv(img,c_src,c_dst,alpha=1,density=1)
+    transformed_image = 255 * transformed_image
+    transformed_image = transformed_image.astype(img.dtype)
+    return transformed_image
 
 class UISketch:
     def __init__(self, img_size, scale, accu=True, nc=3,width=10):
@@ -40,35 +40,45 @@ class UISketch:
                 cv2.line(self.img, pnt1, pnt2, c, self.width)
 
     def warp_img(self,pos,move_pos,warp_control_points):
-        pos_x = int(pos.x()/self.scale) / (1.0*self.img_size)
-        pos_y = int(pos.y()/self.scale) / (1.0*self.img_size)
-        move_pos_x = int(move_pos.x()/self.scale) / (1.0*self.img_size)
-        move_pos_y = int(move_pos.y()/self.scale) / (1.0*self.img_size)
-
-
+        pos_x = int(pos.x()/self.scale)
+        pos_y = int(pos.y()/self.scale)
+        move_pos_x = int(move_pos.x()/self.scale)
+        move_pos_y = int(move_pos.y()/self.scale)
 
         c_src = np.array([
-            [0.0, 0.0],
-            [1., 0],
-            [1, 1],
-            [0, 1],
             [pos_x, pos_y],
             ])
 
         c_dst = np.array([
-            [0.0, 0.0],
-            [1., 0],
-            [1, 1],
-            [0, 1],
             [move_pos_x, move_pos_y],
             ])
+
         for warp_control_point in warp_control_points:
-            x = int(warp_control_point.x()/self.scale) / (1.0*self.img_size)
-            y = int(warp_control_point.y()/self.scale) / (1.0*self.img_size)
+            x = int(warp_control_point.x()/self.scale)
+            y = int(warp_control_point.y()/self.scale)
             arr = np.array([[x,y]])
             c_src = np.vstack((c_src,arr))
             c_dst = np.vstack((c_dst,arr))
         self.img = warp_image_cv(self.img, c_src, c_dst, dshape=(self.img_size, self.img_size))
+
+    def paste_patch(self,pos,w,paste_img):
+        pos_x = int(pos.x()/self.scale)
+        pos_y = int(pos.y()/self.scale)
+        w = int(w)
+
+        paste_img = cv2.resize(paste_img,(self.img_size,self.img_size))
+
+        mask = np.full((self.img_size, self.img_size), 0 ,dtype = np.uint8)
+        mask = cv2.rectangle(mask,(pos_x,pos_y),( pos_x + w , pos_y + w  ),(255,255,255),thickness=-1)
+
+        img = self.img
+        foreground_img = cv2.bitwise_or(paste_img,paste_img,mask=mask)
+        back_mask = cv2.bitwise_not(mask)
+        background_img =  cv2.bitwise_or(img, img, mask = back_mask)
+
+        self.img = cv2.bitwise_or(foreground_img,background_img)
+
+
 
     def move_img(self,pos,move_pos,w):
         pos_x = int(pos.x()/self.scale)

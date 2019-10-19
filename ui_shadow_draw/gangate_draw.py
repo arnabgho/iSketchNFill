@@ -45,6 +45,8 @@ class GANGATEDraw(QWidget):
         self.warp_control_points = []
         self.prev_brushWidth = None
         self.scribbling = True
+        self.selecting_patch = False
+        self.cycling_shadows=False
         self.show()
 
     def update_control_points(self,warp_start,warp_end):
@@ -102,6 +104,8 @@ class GANGATEDraw(QWidget):
         self.brushWidth = int(1 * self.scale)
         self.scribbling = True
         self.scribble()
+        self.selecting_patch=False
+        self.cycling_shadows=False
         self.update()
 
     def erase(self):
@@ -125,19 +129,32 @@ class GANGATEDraw(QWidget):
     def move_stroke(self):
         self.moving = True
         self.warping = False
+        self.selecting_patch=False
         self.moving_points = []
         self.moving_points.append(self.pos)
 
     def warp_stroke(self):
         self.warping = True
         self.moving = False
+        self.selecting_patch=False
         self.brushWidth = int(2 * self.scale)
         print("warping")
+
 
     def draw_stroke(self):
         self.warping = False
         self.moving = False
+        self.selecting_patch=False
+        self.scribbling=True
         self.warp_control_points = []
+
+
+    def select_patch(self):
+        self.warping = False
+        self.moving = False
+        self.scribbling=False
+        self.selecting_patch=True
+
 
     def round_point(self, pnt):
         x = int(np.round(pnt.x()))
@@ -173,7 +190,7 @@ class GANGATEDraw(QWidget):
 
             painter.setPen(QPen(ca, 1))
             painter.setBrush(ca)
-            if self.moving:
+            if self.moving or self.selecting_patch :
                 painter.drawRect(int(self.pos.x()),int(self.pos.y()), self.cutWidth, self.cutWidth)
             elif self.warping and self.warp_start is not None:
                 point_activated_color = QColor(0, 255, 0, 127)
@@ -220,8 +237,16 @@ class GANGATEDraw(QWidget):
         else:
             d= event.angleDelta()
             self.cutWidth = self.cutWidth + d.y()/10
+
+        if self.selecting_patch:
+            d= event.angleDelta()
+            self.cutWidth = self.cutWidth + d.y()/10
+
         if self.scribbling:
             self.prev_brushWidth = self.brushWidth
+
+        if self.cycling_shadows and self.selecting_patch:
+            self.parent().parent().cycle_shadow_image()
         self.update()
 
 
@@ -240,6 +265,9 @@ class GANGATEDraw(QWidget):
             self.isPressed = True
             if self.moving:
                 self.moving_points.append(self.pos)
+            elif self.selecting_patch:
+                paste_img=self.parent().parent().get_paste_image()
+                self.uiSketch.paste_patch(self.pos,self.cutWidth,paste_img)
             elif self.warping:
                 self.warp_start = self.findNearestControlPoint(self.pos)
             else:
@@ -272,7 +300,9 @@ class GANGATEDraw(QWidget):
             if self.moving:
                 self.moving_points.append(self.pos)
             if self.warping:
-                pass
+                self.warp_end = self.pos
+                if self.warp_start is not None:
+                    self.update_ui()
             else:
                 self.points.append(self.pos)
                 self.update_ui()
@@ -306,6 +336,9 @@ class GANGATEDraw(QWidget):
     def setShadowImage(self,cv2_img):
         self.shadow_image= cv2.resize(cv2_img,(self.img_size,self.img_size))
         self.update()
+
+    def cycleShadows(self):
+        self.cycling_shadows=True
 
 
 if __name__ == '__main__':

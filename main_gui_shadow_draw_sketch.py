@@ -35,7 +35,7 @@ transform = get_transform(opt)
 model = create_model(opt)
 
 class GANGATEGui(QWidget):
-    def __init__(self,win_size= 256 ,img_size = 256):
+    def __init__(self,win_size= 384 ,img_size = 384):
         QWidget.__init__(self)
 
         self.win_size = win_size
@@ -58,29 +58,33 @@ class GANGATEGui(QWidget):
 
         self.labelId=0
 
-
-
-        self.bGenerate = QPushButton('Generate')
+        self.bGenerate = QPushButton('Generate !')
         self.bGenerate.setToolTip("This button generates the final image to render")
 
 
         self.bReset = QPushButton('Reset')
         self.bReset.setToolTip("This button resets the drawing pad !")
 
+
+
         self.bRandomize = QPushButton('Dice')
         self.bRandomize.setToolTip("This button generates new set of generations the drawing pad !")
 
 
         self.bMoveStroke = QRadioButton('Move Stroke')
-        self.bMoveStroke.setToolTip("This button resets the drawing pad !")
+        self.bMoveStroke.setToolTip("This button moves the selected stroke on the drawing pad !")
 
         self.bWarpStroke = QRadioButton('Warp Stroke')
-        self.bWarpStroke.setToolTip("This button resets the drawing pad !")
+        self.bWarpStroke.setToolTip("This button warps the selected stroke on the drawing pad !")
 
         self.bDrawStroke = QRadioButton('Draw Stroke')
-        self.bDrawStroke.setToolTip("This button resets the drawing pad !")
+        self.bDrawStroke.setToolTip("This button reverts back to the drawing mode on the drawing pad !")
 
+        self.bSelectPatch = QRadioButton('Select Patch')
+        self.bSelectPatch.setToolTip("This button selects patches from the shadows!")
 
+        self.bEnableShadows = QCheckBox('Enable Shadows')
+        self.bEnableShadows.toggle()
 
 
         hbox = QHBoxLayout()
@@ -98,19 +102,14 @@ class GANGATEGui(QWidget):
 
 
         bhbox_controls = QGridLayout()
-        bGroup_controls = QButtonGroup(self)
-
-        bGroup_controls.addButton(self.bReset)
-        bGroup_controls.addButton(self.bDrawStroke)
-        bGroup_controls.addButton(self.bMoveStroke)
-        bGroup_controls.addButton(self.bWarpStroke)
-
 
         bhbox_controls.addWidget(self.bReset,0,0)
         bhbox_controls.addWidget(self.bRandomize,0,1)
         bhbox_controls.addWidget(self.bDrawStroke,0,2)
         bhbox_controls.addWidget(self.bMoveStroke,0,3)
         bhbox_controls.addWidget(self.bWarpStroke,0,4)
+        bhbox_controls.addWidget(self.bSelectPatch,0,5)
+        bhbox_controls.addWidget(self.bEnableShadows,0,6)
 
         hbox.addLayout(vbox3)
 
@@ -127,12 +126,25 @@ class GANGATEGui(QWidget):
 
         self.bDrawStroke.setChecked(True)
 
+        self.enable_shadow = True
+        self.which_shadow_img = 0
+
         self.bGenerate.clicked.connect(self.generate)
         self.bReset.clicked.connect(self.reset)
         self.bRandomize.clicked.connect(self.randomize)
         self.bMoveStroke.clicked.connect(self.move_stroke)
         self.bWarpStroke.clicked.connect(self.warp_stroke)
         self.bDrawStroke.clicked.connect(self.draw_stroke)
+        self.bSelectPatch.clicked.connect(self.select_patch)
+        self.bEnableShadows.stateChanged.connect(self.toggle_shadow)
+
+    def toggle_shadow(self,state):
+        if state == Qt.Checked:
+            self.enable_shadow=True
+        else:
+            self.enable_shadow=False
+            self.drawWidget.cycleShadows()
+        self.generate()
 
 
     def get_network_input(self):
@@ -192,17 +204,24 @@ class GANGATEGui(QWidget):
             util.save_image(image_numpy,save_path)
         ## convert back from pil image to cv2 image
 
-        cv2_img = cv2.imread('imgs/test_fake_B_shadow.png')
-        cv2_img = cv2.resize(cv2_img,(self.img_size,self.img_size))
-
-        img_gray = cv2.imread('imgs/test_0_L_fake_B_inter.png',cv2.IMREAD_GRAYSCALE)
-        img_gray = cv2.resize(img_gray,(self.img_size,self.img_size))
-        (thresh,im_bw)=cv2.threshold(img_gray,128,255,cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-
+        if self.enable_shadow:
+            cv2_img = cv2.imread('imgs/test_fake_B_shadow.png')
+        else:
+            cv2_img = cv2.imread('imgs/test_%d_L_fake_B_inter.png'%(self.which_shadow_img))
 
         self.drawWidget.setShadowImage(cv2_img)
 
         self.visWidget.update_vis('imgs/fake_B_gallery.png')
+
+    def cycle_shadow_image(self):
+        self.which_shadow_img+=1
+        self.which_shadow_img = self.which_shadow_img%opt.num_interpolate
+        self.generate()
+    def get_paste_image(self):
+        cv2_img = cv2.imread('imgs/test_%d_L_fake_B_inter.png'%(self.which_shadow_img))
+        cv2_img = cv2.resize(cv2_img,(self.img_size,self.img_size))
+
+        return cv2_img
 
     def reset(self):
         self.drawWidget.reset()
@@ -215,6 +234,9 @@ class GANGATEGui(QWidget):
 
     def draw_stroke(self):
         self.drawWidget.draw_stroke()
+
+    def select_patch(self):
+        self.drawWidget.select_patch()
 
     def randomize(self):
         model.randomize_noise()

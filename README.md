@@ -134,7 +134,7 @@ python train.py --name wgangp_sparse_label_channel_pix2pix_autocomplete_multisca
 
 * The [Zero Centred Gradient Penalty](https://arxiv.org/pdf/1801.04406.pdf) helps stabilize the training to a large extent.
 
-* If the model diverges in your dataset, reduce the learning rate of the generator and discriminator to 1e-5, and train longer. This can be useful in scenarios where you can only have smaller batch sizes.
+* If the model diverges in your dataset, reduce the learning rate of the generator and discriminator to 1e-5. This can be useful in scenarios where you can only have smaller batch sizes.
 
 * The preparation script first creates the required folders. It generates partial sketch images to simulate the different partial sketches the user will provide.
 
@@ -153,4 +153,4 @@ If you use this code for your research, please cite our paper.
 }
 ```
 ## Acknowledgement
-Code is inspired by [pytorch-CycleGAN-and-pix2pix]( https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix ).
+Code is inspired by [pytorch-CycleGAN-and-pix2pix]( https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix ). The UI is inspired by [iGAN] (https://github.com/junyanz/iGAN). The pix2pixhd implementation is from [SPADE] (https://github.com/NVlabs/SPADE). The warp functionality is from [Moving-Least-Squares](https://github.com/Jarvis73/Moving-Least-Squares). 
