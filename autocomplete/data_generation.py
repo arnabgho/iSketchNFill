@@ -6,14 +6,21 @@ import math
 from PIL import Image
 from PIL import ImageOps
 from tqdm import tqdm
+import argparse
+
+parser = argparse.ArgumentParser(description='Input Scribble Directory!')
+parser.add_argument('--scribble_dir', type=str, help='Scribble Directory')
+parser.add_argument('--how_many_per_size', type=int, default =1, help='Number of images per size')
+args = parser.parse_args()
+
 def fill(im,points):
     filler = cv2.convexHull(points)
     im=cv2.fillConvexPoly(im, filler, (255,255,255))
     return im
 
-scribble_dir = '../data/cartoonset10k/scribbles/'
+scribble_dir = args.scribble_dir #'../data/cartoonset10k/scribbles/'
 occ_sizes=[64,128,192]
-how_many_per_size = 50
+how_many_per_size = args.how_many_per_size
 img_size = 256
 for scribble_class in os.listdir(scribble_dir):
     out_dir = os.path.join(os.getcwd(),'autocomplete',scribble_class)

@@ -111,21 +111,60 @@ python main_gui_shadow_draw_pix2pix.py --name wgangp_sparse_label_channel_pix2pi
 * If the user draws close to the shadows they can snap between modes such as go to different shapes of watermelons.
 * With a small stroke the user can try to move the stroke to see possible autocompletions that depict different sizes/shapes of the object.
 
+***
+# New Features !
+
+## Select Patches
+<p align="center">
+  <img  height="300" src='docs/resources/gifs/select_patches.gif'>
+</p>
+
+One can select patches from the autocompletions using the select patch option. One can cycle through the completions using the scroll button on the mouse and left click to select the patch.
+
+Here we see that the user first chooses a completion with glasses, locks in the patch. The chin stroke is lowered until a beard appears. The user locks in this patch and moves on to the hair.
+
+## Warp stroke
+<p align="center">
+  <img  height="300" src='docs/resources/gifs/watermelon_warp.gif'>
+</p>
+
+Using [As Rigid as Possible](http://faculty.cs.tamu.edu/schaefer/research/mls.pdf) transformations on the stroke interesting manipulations can be made.
+
+Here we see the user making control points at the edges of the stroke using the right click of the mouse. Then using the left click the user can drag the control point to change the shape of the watermelon.
 
 ***
+# Scribble Dataset
 
+Get the data
+```
+wget -N "http://www.robots.ox.ac.uk/~arnabg/scribble_dataset.zip"
+```
+
+***
 ## Train Sketch Autocomplete Models
 
+### Emoji
 Prepare the training data for training autocomplete model.
 The original data for the emoji is from [Cartoon Set](https://google.github.io/cartoonset/download.html) collected by Google.
 ```
-bash scripts/train_autocomplete_emoji.sh
+bash scripts/prepare_autocomplete_emoji.sh
 ```
 
 Train the autocomplete model
 
 ```
 python train.py --name wgangp_sparse_label_channel_pix2pix_autocomplete_multiscale_nz_256_nc_1_nf_32_gp_0_multigpu --model sparse_wgangp_pix2pix --dataroot ../data/autocomplete-cartoons/  --lambda_A 0.0 --lambda_GAN 1 --niter 800  --lr_d 1e-4 --lr_g 1e-4 --checkpoints_dir checkpoints_sparse_cartoons --batchSize 128 --gpu_ids 0 --save_epoch_freq 1 --nz 256 --sparseSize 4 --fineSize 128 --ngf 32 --ndf 32 --autocomplete_dataset_outline  --img_conditional_D --input_nc 1 --output_nc 1
+```
+
+### Scribble Dataset
+Prepare the training data for training autocomplete model.
+```
+bash scripts/prepare_autocomplete_scribble_dataset.sh
+```
+
+Train the autocomplete model
+```
+python train.py --name wgangp_sparse_label_channel_pix2pix_autocomplete_multiscale_nz_256_nc_1_nf_32_gp_0_multigpu --model sparse_wgangp_pix2pix --dataroot ../data/autocomplete-scribble-dataset/  --lambda_A 0.0 --lambda_GAN 1 --niter 800  --lr_d 1e-4 --lr_g 1e-4 --checkpoints_dir checkpoints_sparse_scribble_dataset --batchSize 128 --gpu_ids 0 --save_epoch_freq 1 --nz 256 --sparseSize 4 --fineSize 128 --ngf 32 --ndf 32 --autocomplete_dataset_outline  --img_conditional_D --input_nc 1 --output_nc 1 --n_classes 10
 ```
 
 ### Tips for training
@@ -142,6 +181,8 @@ python train.py --name wgangp_sparse_label_channel_pix2pix_autocomplete_multisca
 
 - Other datasets and training scripts coming soon !
 
+
+
 ## Citation
 If you use this code for your research, please cite our paper.
 ```
@@ -153,4 +194,4 @@ If you use this code for your research, please cite our paper.
 }
 ```
 ## Acknowledgement
-Code is inspired by [pytorch-CycleGAN-and-pix2pix]( https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix ). The UI is inspired by [iGAN](https://github.com/junyanz/iGAN). The pix2pixhd implementation is from [SPADE](https://github.com/NVlabs/SPADE). The warp functionality is from [Moving-Least-Squares](https://github.com/Jarvis73/Moving-Least-Squares). 
+Code is inspired by [pytorch-CycleGAN-and-pix2pix]( https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix ). The UI is inspired by [iGAN](https://github.com/junyanz/iGAN). The pix2pixhd implementation is from [SPADE](https://github.com/NVlabs/SPADE). The warp functionality is from [Moving-Least-Squares](https://github.com/Jarvis73/Moving-Least-Squares).

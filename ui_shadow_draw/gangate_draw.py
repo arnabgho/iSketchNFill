@@ -239,14 +239,17 @@ class GANGATEDraw(QWidget):
             self.cutWidth = self.cutWidth + d.y()/10
 
         if self.selecting_patch:
-            d= event.angleDelta()
-            self.cutWidth = self.cutWidth + d.y()/10
+            if self.cycling_shadows:
+                self.parent().parent().cycle_shadow_image()
+            else:
+                d= event.angleDelta()
+                self.cutWidth = self.cutWidth + d.y()/10
 
         if self.scribbling:
             self.prev_brushWidth = self.brushWidth
 
-        if self.cycling_shadows and self.selecting_patch:
-            self.parent().parent().cycle_shadow_image()
+        #if self.cycling_shadows and self.selecting_patch:
+        #    self.parent().parent().cycle_shadow_image()
         self.update()
 
 
