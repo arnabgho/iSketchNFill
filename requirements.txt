@@ -1,5 +1,5 @@
 requests==2.21.0
-opencv_python==4.1.1.26
+opencv_python==4.2.0.32
 QDarkStyle==2.7
 torchvision==0.2.2
 torch==1.0.1.post2
