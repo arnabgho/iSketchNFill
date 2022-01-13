@@ -6,7 +6,7 @@ torch==1.0.1.post2
 setuptools==40.8.0
 dominate==2.4.0
 visdom==0.1.8.8
-Pillow==6.1.0
+Pillow==9.0.0
 PyQt5==5.13.1
 beautifulsoup4==4.8.0
 test_model==0.1
